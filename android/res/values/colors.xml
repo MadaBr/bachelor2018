@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimaryDark">#5870cb</color>
+    <color name="colorPrimary">#8c9eff</color>
+    <color name="colorPrimaryLight">#c0cfff</color>
+    <color name="colorDarkk">#23272A</color>
+    <color name="colorDark">#2A2D34</color>
+    <color name="user_chatBubble">#DDCECD</color>
+    <color name="bot_chatBubble">#28AFB0</color>
+    <color name="transparentLightBlue">#c2d0ff</color>
+    <color name="botTextColor">#EBF7F7</color>
+    <color name="nickel">#797170</color>
+    <color name="mistyRose">#FCE4E0</color>
+</resources>

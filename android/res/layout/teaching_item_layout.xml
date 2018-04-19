@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp"
+    android:layout_marginTop="50dp"
+    android:background="@drawable/teaching_item_background"
+    android:id="@+id/teachingLLItem">
+
+    <ImageView
+        android:id="@+id/teachingItemIMGV"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:id="@+id/translatedItemTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:textSize="25dp"
+        android:text="hello"
+        android:elevation="30dp"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/nativeItemTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:textColor="@color/bot_chatBubble"
+        android:layout_gravity="center"
+        android:textSize="25dp"
+        android:elevation="30dp"/>
+
+    <Button
+        android:id="@+id/translateBTN"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="right"
+        android:background="@drawable/ic_translate_black_24dp"
+        android:layout_marginRight="20dp"
+        android:focusable="true"
+        android:layout_marginBottom="20dp"/>
+
+
+</LinearLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">GDXgameScene2D</string>
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="LoginText">Log in</string>
+    <string name="new_account">Need a new account?</string>
+    <string name="signUp">Sign up</string>
+
+    <!-- ALL USERS ACTIVITY -->
+    <string name="friend_request">Add</string>
+
+    <!-- REGISTER ACTIVITY -->
+    <string name="nativeLanguage">Your native Language</string>
+    <string name="learningLanguage">Language you want to learn</string>
+
+    <string-array name="languages">
+        <item>English</item>
+        <item>French</item>
+        <item>German</item>
+        <item>Korean</item>
+        <item>Romanian</item>
+    </string-array>
+
+</resources>
