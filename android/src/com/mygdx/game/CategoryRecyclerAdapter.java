@@ -3,6 +3,7 @@ package com.mygdx.game;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryRecycl
         public LinearLayout categoryItem;
         public TextView categoryName;
         public ImageView icon;
+
         public CategoryViewHolder(View itemView) {
             super(itemView);
             categoryName = (TextView)itemView.findViewById(R.id.categoryNameTV);
@@ -66,13 +68,16 @@ public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryRecycl
             categoryItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(CategoryChooserActivity.redirect.equals("learn")){
+                    if(CategoryChooserActivity.sender.equals("study")){
                         Intent intent = new Intent(v.getContext(),TeachingActivity.class);
                         v.getContext().startActivity(intent);
                     }
-                    else if (CategoryChooserActivity.redirect.equals("play")){
-                        Intent intent = new Intent("startSpaceGame");
+                    else if (CategoryChooserActivity.sender.equals("game")){
+                        Intent intent = new Intent(v.getContext(), SplashScreenActivity.class);
+                        intent.putExtra("category", categoryName.getText().toString().toLowerCase());
+                        Log.wtf("DEBUGGING", "2. categoryRecyclerItemClick starting splash");
                         v.getContext().startActivity(intent);
+
                     }
         }
     });

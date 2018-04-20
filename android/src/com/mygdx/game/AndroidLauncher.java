@@ -1,6 +1,8 @@
 package com.mygdx.game;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
@@ -12,7 +14,12 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 
+		Intent data = getIntent();
+		String nativeLanguage = data.getStringExtra("nativeLanguage");
+		String studyingLanguage = data.getStringExtra("studyingLanguage");
+
 		AndroidActivityResolver androidResolver = new AndroidResolver(this);
-		initialize(new Application(androidResolver,CategoryActivity.translatedPairs), config);
+		Log.wtf("DEBUGGING", "4. launcher starting game");
+		initialize(new Application(androidResolver,CategoryActivity.translatedPairs, nativeLanguage,studyingLanguage), config);
 	}
 }

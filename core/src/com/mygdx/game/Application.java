@@ -38,11 +38,25 @@ public class Application extends Game{
 	public SpriteBatch batch;
 	private Screen menuScreen;
 	public  Map<String,String> translatedPairs;
+	public static String nativeLanguage, studyingLanguage;
+
+	public static String NATIVE_LANGUAGE_CHARS, STUDYING_LANGUAGE_CHARS;
 
 
-	public Application(AndroidActivityResolver androidResolver,Map<String, String> translatedPairs) {
+	public Application(AndroidActivityResolver androidResolver,Map<String, String> translatedPairs, String nativeLanguage, String studyingLanguage) {
 		this.androidResolver = androidResolver;
 	    this.translatedPairs = translatedPairs;
+	    this.nativeLanguage = nativeLanguage;
+	    this.studyingLanguage = studyingLanguage;
+
+	    StringBuilder b1 = new StringBuilder();
+		StringBuilder b2 = new StringBuilder();
+	    for(Map.Entry<String,String> entry: translatedPairs.entrySet()){
+	    	b1.append(entry.getKey());
+	    	b2.append(entry.getValue());
+		}
+		NATIVE_LANGUAGE_CHARS = b1.toString();
+		STUDYING_LANGUAGE_CHARS = b2.toString();
 	}
 
 	@Override

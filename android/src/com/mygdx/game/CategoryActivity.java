@@ -71,9 +71,13 @@ public class CategoryActivity extends AppCompatActivity {
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.wtf("DEBUGGING", "1. categoryActivity");
+                 Intent intent = new Intent(CategoryActivity.this, CategoryChooserActivity.class);
+                 intent.putExtra("sender", "game");
+                 startActivity(intent);
 
-                    Intent intent = new Intent("startSpaceGame");
-                    startActivity(intent);
+                   // Intent intent = new Intent("startSpaceGame");
+                    //startActivity(intent);
             }
         });
 
@@ -116,14 +120,13 @@ public class CategoryActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-       // FirebaseUser current_user = mAuth.getCurrentUser();
-
         if(LoginActivity.current_user == null){
             Intent intent = new Intent(CategoryActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         }
     }
+
 
 
     /*  public class GetWordTranslation extends android.os.AsyncTask <Void, Void, Map<String, String>>{

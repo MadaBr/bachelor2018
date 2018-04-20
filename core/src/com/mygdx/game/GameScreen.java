@@ -45,6 +45,10 @@ public class GameScreen implements Screen {
         shipSprite.setPosition(Gdx.graphics.getWidth() / 2 - shipSprite.getWidth() / 4 / 2, 0);
         ship = new ShipActor(shipSprite, 4, 2);
 
+        for(Map.Entry<String, String> e : app.translatedPairs.entrySet()){
+            Gdx.app.error("GAMESCREEN", e.getKey() + " " + e.getValue() );
+        }
+
         List<String> enemyValues = new ArrayList<String>();
         for(String s: app.translatedPairs.values()){
             enemyValues.add(s);

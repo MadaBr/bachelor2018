@@ -19,5 +19,6 @@ public class AndroidResolver extends Activity implements AndroidActivityResolver
     public void startAndroidActivity() {
         Intent intent = new Intent(context,CategoryActivity.class);
         ((Activity)context).startActivity(intent);
+
     }
 }

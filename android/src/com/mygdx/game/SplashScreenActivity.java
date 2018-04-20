@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -27,20 +28,26 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
     Animation fromTop;
     Animation fromBottom;
+    public String gameCategory = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
+        Intent received = getIntent();
+        gameCategory = received.getStringExtra("category");
 
+        Log.wtf("DEBUGGING", "2.1 in splash");
         ImageView circle1 = (ImageView)findViewById(R.id.circle1ImgV) ;
         ImageView circle2 = (ImageView)findViewById(R.id.circle2ImgV) ;
         ImageView circle3 = (ImageView)findViewById(R.id.circle3ImgV) ;
@@ -55,18 +62,19 @@ public class SplashScreenActivity extends AppCompatActivity {
         circle3.setAnimation(fromTop);
 
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("categories");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 CategoryActivity.nativeWords.clear();
+                CategoryActivity.translatedPairs.clear();
 
-                Iterable<DataSnapshot> words = dataSnapshot.child("categories").child("animals").getChildren();
+                Iterable<DataSnapshot> words = dataSnapshot.child(gameCategory).getChildren();
                 for(DataSnapshot ds : words){
                     CategoryActivity.nativeWords.add(ds.getValue().toString());
                 }
-                    //decomment to use translation
+
                 GetWordTranslation translator = new GetWordTranslation();
                 translator.execute();
             }
@@ -81,9 +89,10 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     public class GetWordTranslation extends android.os.AsyncTask <Void, Void, Map<String, String>>{
 
+        public List<String> nativeWordsEN;
         //"https://glosbe.com/gapi/translate?from=eng&dest=kor&format=json&phrase="
         String origin = "https://glosbe.com/gapi/translate?from=";
-        String from = LoginActivity.nativeLanguage;
+        String from = "en";
         String destLinkConnector = "&dest=";
         String dest = LoginActivity.studyingLanguage;
         String linkConnector = "&format=json&phrase=";
@@ -103,10 +112,19 @@ public class SplashScreenActivity extends AppCompatActivity {
                 CategoryActivity.translatedPairs.put(pair.getKey(), pair.getValue());
             }
 
+            Intent intent = new Intent("startSpaceGame");
+            intent.putExtra("nativeLanguage", LoginActivity.nativeLanguage);
+            intent.putExtra("studyingLanguage", LoginActivity.studyingLanguage);
+
+            Log.wtf("DEBUGGING", "3. splash starting game");
+
+            SplashScreenActivity.this.startActivity(intent);
+            SplashScreenActivity.this.finish();
+
             //decomment to use translation
-            Intent intent = new Intent(SplashScreenActivity.this, CategoryActivity.class);
-            startActivity(intent);
-            finish();
+           // Intent intent = new Intent(SplashScreenActivity.this, CategoryActivity.class);
+           // startActivity(intent);
+           // finish();
         }
 
         @Override
@@ -117,39 +135,91 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         @Override
         protected Map<String, String> doInBackground(Void... params) {
+            Log.wtf("DEBUGGING - in bg SPLASH", " in background for " + gameCategory);
+
             Map<String, String> translations = new HashMap<>();
             URL apiCallUrl = null;
             HttpURLConnection conn =null;
 
             try{
 
-                StringBuilder linkConfig = new StringBuilder();
-                linkConfig.append(origin)
-                          .append(from)
-                          .append(destLinkConnector)
-                          .append(dest)
-                          .append(linkConnector);
-
-                   for(int i = 0; i< CategoryActivity.nativeWords.size(); i++){
-                    apiCallUrl = new URL(linkConfig.toString() + CategoryActivity.nativeWords.get(i) + prettyFormat);
-
-                    /*conn = (HttpURLConnection) apiCallUrl.openConnection();
-                    InputStream is = conn.getInputStream();
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader bfr = new BufferedReader(isr);
-                    String line="";
-                    StringBuilder builder = new StringBuilder();
-
-                    while((line=bfr.readLine()) != null){
-                        builder.append(line);
+                if(!LoginActivity.nativeLanguage.equals("en")) {
+                    if(dest.equals("en")){
+                        nativeWordsEN = new ArrayList<>();
                     }
 
-                    translations.put(CategoryActivity.nativeWords.get(i), parseJSON(builder.toString()));
+                    StringBuilder linkConfig_forNativeRetrieval = new StringBuilder();
+                    linkConfig_forNativeRetrieval.append(origin)
+                            .append(from)
+                            .append(destLinkConnector)
+                            .append(LoginActivity.nativeLanguage)
+                            .append(linkConnector);
 
-                    bfr.close();
-                    isr.close();
-                    is.close();
-                    conn.disconnect();*/
+                    for (int i = 0; i < CategoryActivity.nativeWords.size(); i++) {
+                        apiCallUrl = new URL(linkConfig_forNativeRetrieval.toString() + CategoryActivity.nativeWords.get(i) + prettyFormat);
+
+                        conn = (HttpURLConnection) apiCallUrl.openConnection();
+                        InputStream is = conn.getInputStream();
+                        InputStreamReader isr = new InputStreamReader(is);
+                        BufferedReader bfr = new BufferedReader(isr);
+                        String line = "";
+                        StringBuilder builder = new StringBuilder();
+
+                        while ((line = bfr.readLine()) != null) {
+                            builder.append(line);
+                        }
+
+                        if(dest.equals("en")){
+                         nativeWordsEN.add(CategoryActivity.nativeWords.get(i));
+                        }
+
+                        CategoryActivity.nativeWords.set(i, parseJSON(builder.toString()));
+
+                        bfr.close();
+                        isr.close();
+                        is.close();
+                        conn.disconnect();
+                    }
+                }
+
+                if(!dest.equals("en")) {
+                    StringBuilder linkConfig = new StringBuilder();
+                    linkConfig.append(origin)
+                            .append(LoginActivity.nativeLanguage)
+                            .append(destLinkConnector)
+                            .append(dest)
+                            .append(linkConnector);
+
+                    for (int i = 0; i < CategoryActivity.nativeWords.size(); i++) {
+                        apiCallUrl = new URL(linkConfig.toString() + CategoryActivity.nativeWords.get(i) + prettyFormat);
+
+                        conn = (HttpURLConnection) apiCallUrl.openConnection();
+                        InputStream is = conn.getInputStream();
+                        InputStreamReader isr = new InputStreamReader(is);
+                        BufferedReader bfr = new BufferedReader(isr);
+                        String line = "";
+                        StringBuilder builder = new StringBuilder();
+
+                        while ((line = bfr.readLine()) != null) {
+                            builder.append(line);
+                        }
+
+                        translations.put(CategoryActivity.nativeWords.get(i), parseJSON(builder.toString()));
+
+                        bfr.close();
+                        isr.close();
+                        is.close();
+                        conn.disconnect();
+                    }
+                }
+                else{
+                    for(int i=0; i<CategoryActivity.nativeWords.size(); i++){
+                        translations.put(CategoryActivity.nativeWords.get(i), nativeWordsEN.get(i));
+                    }
+                }
+
+                for(Map.Entry<String,String> e : translations.entrySet()){
+                    Log.wtf("TRANSLATION:", "N:" + e.getKey() + " =  T:"  + e.getValue());
                 }
             }  catch (MalformedURLException e) {
                 e.printStackTrace();

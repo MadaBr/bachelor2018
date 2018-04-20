@@ -13,6 +13,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
+import java.awt.SplashScreen;
+
 public class EnemyActor extends Actor{
 
     private int FRAMES_COL;
@@ -63,14 +65,26 @@ public class EnemyActor extends Actor{
         float x = (float)Math.random() * ((720-frameWidth/2) - (frameWidth/2));
         position = new Vector2(x,Gdx.app.getGraphics().getHeight());
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Typo_DodamM.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        params.color = new Color(0.119f,0.169f,0.204f,1);
-        params.size = 25;
-        params.characters = EnemyManager.DEFAULT_KR_CHARACTERS;
+        if(Application.studyingLanguage.equals("kor")) {
+            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Typo_DodamM.ttf"));
+            FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            params.color = new Color(0.119f, 0.169f, 0.204f, 1);
+            params.size = 25;
+            params.characters = Application.STUDYING_LANGUAGE_CHARS;
 
-        labelFont = generator.generateFont(params);
-        generator.dispose();
+            labelFont = generator.generateFont(params);
+            generator.dispose();
+        }
+        else{
+            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Raleway-Regular.ttf"));
+            FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            params.color = new Color(0.119f, 0.169f, 0.204f, 1);
+            params.size = 25;
+            params.characters = Application.STUDYING_LANGUAGE_CHARS;
+
+            labelFont = generator.generateFont(params);
+            generator.dispose();
+        }
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = labelFont;

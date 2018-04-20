@@ -148,9 +148,9 @@ public class ChatBotActivity extends AppCompatActivity {
                     AIRequest aiRequest = new AIRequest();
                     aiRequest.setQuery(userMessage);
 
-                    GetChatBotConnection Bot = new GetChatBotConnection();
+                    GetChatBotConnection executingBot = new GetChatBotConnection();
                     Log.wtf("TAG", "sending message");
-                    Bot.execute(aiRequest);
+                    executingBot.execute(aiRequest);
                 }
             }
         });

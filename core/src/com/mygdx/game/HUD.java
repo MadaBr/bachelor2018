@@ -56,10 +56,11 @@ public class HUD {
         table.bottom();
         table.setFillParent(true);
 
-        FreeTypeFontGenerator g = new FreeTypeFontGenerator(Gdx.files.internal("Walkway_Black.ttf"));
+        FreeTypeFontGenerator g = new FreeTypeFontGenerator(Gdx.files.internal("Raleway-Regular.ttf"));//"Walkway_Black.ttf"
         FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
         params.color = new Color(1,1,1,1);
         params.size = 20;
+        params.characters = FreeTypeFontGenerator.DEFAULT_CHARS + Application.NATIVE_LANGUAGE_CHARS;
 
         BitmapFont labelFont = g.generateFont(params);
 
