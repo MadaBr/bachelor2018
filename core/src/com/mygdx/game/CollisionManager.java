@@ -11,14 +11,16 @@ import java.util.Random;
  * Created by Mada on 3/17/2018.
  */
 
-public class CollisionManager {
+public class  CollisionManager {
+    private final Application app;
     private ShotManager shotManager;
     private EnemyManager enemyManager;
     private ShipActor ship;
     private Map<String,String> translatedPairs = new HashMap<String, String>();
     private Random random = new Random();
 
-    public CollisionManager(ShotManager shotManager, EnemyManager enemyManager, ShipActor ship, Map<String,String> translatedPairs){
+    public CollisionManager(ShotManager shotManager, EnemyManager enemyManager, ShipActor ship, Map<String,String> translatedPairs, Application app){
+        this.app = app;
         this.shotManager = shotManager;
         this.enemyManager =enemyManager;
         this.ship = ship;
@@ -30,6 +32,9 @@ public class CollisionManager {
         handleEnemyGotHit();
         handleEnemyGotCollected();
         handleShipGotHit();
+        if(ship.lives < 0){
+            app.setScreen(new MenuScreen(app, true));
+        }
     }
 
     public void handleEnemyGotHit(){
@@ -56,8 +61,10 @@ public class CollisionManager {
                     if(temp.stringValue.getText().toString().equals(translatedPairs.get(HUD.word))){
                         Gdx.app.error("MY TAG","ship: " +r1.getX()+" "+ r1.getY() +" - " + r1.getWidth() + " " + r1.getHeight() + " > " +
                                 "enemy: " +r2.getX()+" "+ r2.getY() +" - " + r2.getWidth() + " " + r2.getHeight() );
-                        HUD.score += HUD.word.length() * 10;
-                        HUD.word = HUD.wordValues.get(random.nextInt(HUD.wordValues.size()));
+                        //HUD.score += HUD.word.length() * 10;
+                       // HUD.word = HUD.wordValues.get(random.nextInt(HUD.wordValues.size())); -moved these 2^ to hud class
+                        HUD.actualizeHUDScore();;
+                        HUD.actualizeHUDWord();
                         temp.gotHit();
                     }
                 }

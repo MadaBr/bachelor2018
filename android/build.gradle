@@ -131,8 +131,10 @@ idea {
     }
 }
     dependencies {
+        implementation 'com.android.support:design:26.1.0'
+        implementation 'com.android.support:support-v4:26.1.0'
         compile 'com.android.support:appcompat-v7:26.+'
-        compile 'com.android.support.constraint:constraint-layout:+'
+    compile 'com.android.support.constraint:constraint-layout:+'
     compile 'com.android.support:recyclerview-v7:26.+'
     compile 'com.google.firebase:firebase-core:15.0.0'
     compile 'com.google.firebase:firebase-database:15.0.0'

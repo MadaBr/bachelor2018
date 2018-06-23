@@ -35,19 +35,22 @@ public class MenuScreen implements Screen{
     private ButtonGroup checkboxGroup;
     private CheckBox beginner,medium,advanced;
     private Window window;
-    private  Label difficultyLabel, categoryLabel;
+    private  Label difficultyLabel, categoryLabel, gameStatus;
     private Table table;
     public AssetManager assets;
     private Texture background;
+    private boolean isGameOver = false;
 
-    public MenuScreen(final Application app){
+    public MenuScreen(final Application app, boolean isGameOver){
         assets = new AssetManager();
         this.app = app;
         this.gameScreen = new GameScreen(app);
+        this.isGameOver = isGameOver;
 
         this.stage = new Stage(new ScreenViewport());
 
         skin=new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
+
 
         playButton = new TextButton("Play",skin,"default");
         quitButton = new TextButton("Quit",skin,"default");
@@ -63,16 +66,30 @@ public class MenuScreen implements Screen{
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Walkway_Black.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
         params.color = new Color(0.119f,0.169f,0.204f,1);
-        params.size = 35;
+        params.size = 65;
 
         BitmapFont labelFont = generator.generateFont(params);
+
+        //params.size = 65;
+      //  BitmapFont headlineFont = generator.generateFont(params);
+
         generator.dispose();
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = labelFont;
 
+        //Label.LabelStyle headlineStyle = new Label.LabelStyle();
+       // labelStyle.font = headlineFont;
+
         //difficultyLabel =new Label("Difficulty:",skin,"default");
         // difficultyLabel.setFontScale(2f);
+        if(isGameOver){
+            gameStatus = new Label("Game Over!", labelStyle);
+        }
+        else{
+            gameStatus = new Label("Let's start!", labelStyle);
+        }
+
         difficultyLabel =new Label("Difficulty:",labelStyle);
         categoryLabel =new Label("Category:",labelStyle);
        // categoryLabel =new Label("Category:",skin,"default");
@@ -90,6 +107,7 @@ public class MenuScreen implements Screen{
         table.setOrigin(0,window.getHeight()-20);
         table.padTop(10f);
 
+        table.add(gameStatus).width(400f).height(80f).align(Align.center).padBottom(30f).row();
         table.add(playButton).width(400f).height(80f).padBottom(30f).row();
         table.add(quitButton).width(400f).height(80f).padBottom(30f).row();
         table.add(categoryLabel).width(200f).height(50f).padBottom(30f).row();

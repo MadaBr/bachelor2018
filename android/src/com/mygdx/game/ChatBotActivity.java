@@ -206,7 +206,6 @@ public class ChatBotActivity extends AppCompatActivity {
         @Override
         protected AIResponse doInBackground(AIRequest... aiRequests){
             try {
-                Log.wtf("TAG", "here bg");
                 aiService.textRequest(aiRequests[0]);
                 AIResponse aiResponse  = aiDataService.request(aiRequests[0]);
 
@@ -221,7 +220,6 @@ public class ChatBotActivity extends AppCompatActivity {
         @Override
         public void onResult(AIResponse result) {
             Result res = result.getResult();
-            Log.wtf("TAG", res.getParameters().toString());
             String parameterString = "";
             if (res.getParameters() != null && !res.getParameters().isEmpty()) {
                 for (final Map.Entry<String, JsonElement> entry : res.getParameters().entrySet()) {

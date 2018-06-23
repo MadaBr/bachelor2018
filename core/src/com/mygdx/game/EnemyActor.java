@@ -155,7 +155,7 @@ public class EnemyActor extends Actor{
             return new Rectangle(position.x + 20, position.y + 10, position.x + frameWidth - 20, position.y + frameHeight -10);
         }
         else{
-            return new Rectangle(position.x + frameWidth/2 - 10, position.y +frameHeight/2 - 10, 20,20);
+            return new Rectangle(position.x + frameWidth/2 - 10, position.y +frameHeight/2 - 20, 20,20);
         }
     }
 

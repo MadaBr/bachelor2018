@@ -99,6 +99,14 @@ public class HUD {
         livesLabel.setText((String.format("%01d",lives)));
 
         wordLabel.setText(word);
+        scoreLabel.setText(score.toString());
     }
 
+    public static void actualizeHUDWord(){
+        word = wordValues.get(new Random().nextInt(wordValues.size()));
+    }
+
+    public static void actualizeHUDScore(){
+       score += word.length() * 10;
+    }
 }

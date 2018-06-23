@@ -63,7 +63,7 @@ public class Application extends Game{
 	public void create () {
 		Gdx.app.error("START", translatedPairs.size()+"");
         batch = new SpriteBatch();
-		menuScreen = new MenuScreen(this);
+		menuScreen = new MenuScreen(this, false);
 		this.setScreen(menuScreen);
 	}
 
@@ -76,10 +76,11 @@ public class Application extends Game{
 		batch.end();
 
 	}*/
-	
+
+
 	@Override
 	public void dispose () {
-	    menuScreen.dispose();
+		menuScreen.dispose();
 	}
 
 

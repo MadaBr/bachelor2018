@@ -1,12 +1,16 @@
 package com.mygdx.game;
 
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,8 +31,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AllUsersActivity extends AppCompatActivity {
+
+public class AllUsers_FRAGMENT extends Fragment {
+
     private static final int NOT_FRIENDS = 0, FRIENDS =1, REQ_SENT=2, REQ_RECV=3;
+    public static String TAG = "ALL_USERS";
 
     RecyclerView usersRV;
     FirebaseDatabase firebaseDatabase;
@@ -36,15 +43,16 @@ public class AllUsersActivity extends AppCompatActivity {
     DatabaseReference friendRequestListRef;
     DatabaseReference friendListRef;
     DatabaseReference notificationRef;
+    Context context;
 
-
-
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_all_users);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.all_users_tab,container,false);
 
-        usersRV = (RecyclerView) findViewById(R.id.allUsersRV);
+        context = view.getContext();
+
+        usersRV = (RecyclerView) view.findViewById(R.id.allUsersTAB_RV);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         ref = firebaseDatabase.getReference();
@@ -53,18 +61,19 @@ public class AllUsersActivity extends AppCompatActivity {
         notificationRef = firebaseDatabase.getReference().child("Notifications");
         ref.keepSynced(true);
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(AllUsersActivity.this);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         usersRV.setLayoutManager(layoutManager);
 
-        FirebaseRecyclerAdapter<User,UserRecyclerViewItem> adapter = new FirebaseRecyclerAdapter<User, UserRecyclerViewItem>(User.class, R.layout.all_users_recycler_item, UserRecyclerViewItem.class, ref.child("Users")) {
+        FirebaseRecyclerAdapter<User,AllUsersActivity.UserRecyclerViewItem> adapter = new FirebaseRecyclerAdapter<User, AllUsersActivity.UserRecyclerViewItem>(User.class, R.layout.all_users_recycler_item, AllUsersActivity.UserRecyclerViewItem.class, ref.child("Users")) {
             @Override
-            protected void populateViewHolder(final UserRecyclerViewItem holder, User model, final int position) {
+            protected void populateViewHolder(final AllUsersActivity.UserRecyclerViewItem holder, User model, final int position) {
                 final String user_UID = getRef(position).getKey();
                 holder.username.setText(model.getUsername());
+                holder.userEmail.setText(model.getEmail());
 
                 if (!user_UID.equals(LoginActivity.current_user.getUid())) {
-                   final Button item_button = holder.friendRequest;
-                   final UserFriendshipState friendship_state = new UserFriendshipState(0);
+                    final Button item_button = holder.friendRequest;
+                    final AllUsersActivity.UserFriendshipState friendship_state = new AllUsersActivity.UserFriendshipState(0);
 
                     checkFriendshipStatus(user_UID, item_button, friendship_state);
 
@@ -80,16 +89,13 @@ public class AllUsersActivity extends AppCompatActivity {
                             if (friendship_state.getFriendshipState() == NOT_FRIENDS) {
                                 sendFriendRequest(user_UID, item_button, friendship_state);
                             }
-
                             // --------------------------- CANCEL REQUEST --------------------------
                             if (friendship_state.getFriendshipState() == REQ_SENT) {
                                 cancelFriendRequest(user_UID, item_button, friendship_state);
                             }
-
                             if (friendship_state.getFriendshipState() == REQ_RECV) {
                                 acceptFriendRequest(user_UID,item_button, friendship_state);
                             }
-
                             if(friendship_state.getFriendshipState() == FRIENDS){
                                 unfriend(user_UID, item_button, friendship_state);
                             }
@@ -104,28 +110,46 @@ public class AllUsersActivity extends AppCompatActivity {
         };
 
         usersRV.setAdapter(adapter);
+
+        return  view;
     }
 
-    public void checkFriendshipStatus(String userID, Button itemButton, UserFriendshipState friendshipState){
+
+    public void checkFriendshipStatus(String userID, Button itemButton, AllUsersActivity.UserFriendshipState friendshipState){
         final String user = userID;
         final Button requestButton = itemButton;
-        final UserFriendshipState friendship_state = friendshipState;
+        final AllUsersActivity.UserFriendshipState friendship_state = friendshipState;
 
         friendRequestListRef.child(LoginActivity.current_user.getUid())
                 .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.hasChild(user)){
+
+                            if(dataSnapshot.child(user).child("request_state").getValue().toString().equals("sent")){
+                                friendship_state.setFriendshipState(REQ_SENT);
+                                requestButton.setText("Cancel request");
+                            }
+                            if (dataSnapshot.child(user).child("request_state").getValue().toString().equals("received")){
+                                friendship_state.setFriendshipState(REQ_RECV);
+                                requestButton.setText("Accept request");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+        friendListRef.child(LoginActivity.current_user.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 if(dataSnapshot.hasChild(user)){
-
-                    if(dataSnapshot.child(user).child("request_state").getValue().toString().equals("sent")){
-                        friendship_state.setFriendshipState(REQ_SENT);
-                        requestButton.setText("Cancel request");
-                    }
-                    if (dataSnapshot.child(user).child("request_state").getValue().toString().equals("received")){
-                        friendship_state.setFriendshipState(REQ_RECV);
-                        requestButton.setText("Accept request");
-                    }
+                    friendship_state.setFriendshipState(FRIENDS);
+                    requestButton.setText("Unfriend");
                 }
             }
 
@@ -136,10 +160,10 @@ public class AllUsersActivity extends AppCompatActivity {
         });
     }
 
-    public void sendFriendRequest(String userID, Button itemButton, UserFriendshipState friendshipState){
+    public void sendFriendRequest(String userID, Button itemButton, AllUsersActivity.UserFriendshipState friendshipState){
         final String user = userID;
         final Button requestButton = itemButton;
-        final UserFriendshipState friendship_state = friendshipState;
+        final AllUsersActivity.UserFriendshipState friendship_state = friendshipState;
 
         friendRequestListRef.child(LoginActivity.current_user.getUid())
                 .child(user)
@@ -155,7 +179,7 @@ public class AllUsersActivity extends AppCompatActivity {
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            Toast.makeText(AllUsersActivity.this, "Request sent!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, "Request sent!", Toast.LENGTH_SHORT).show();
                                             friendship_state.setFriendshipState(REQ_SENT);
                                             requestButton.setText("Cancel request");
 
@@ -169,16 +193,16 @@ public class AllUsersActivity extends AppCompatActivity {
                                     });
                         }
                         else{
-                            Toast.makeText(AllUsersActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
-    public void cancelFriendRequest(String userID, Button itemButton, UserFriendshipState friendshipState){
+    public void cancelFriendRequest(String userID, Button itemButton, AllUsersActivity.UserFriendshipState friendshipState){
         final String user = userID;
         final Button requestButton = itemButton;
-        final UserFriendshipState friendship_state = friendshipState;
+        final AllUsersActivity.UserFriendshipState friendship_state = friendshipState;
 
         friendRequestListRef.child(LoginActivity.current_user.getUid())
                 .child(user).removeValue()
@@ -192,101 +216,99 @@ public class AllUsersActivity extends AppCompatActivity {
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            Toast.makeText(AllUsersActivity.this, "Request cancelled!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, "Request cancelled!", Toast.LENGTH_SHORT).show();
                                             friendship_state.setFriendshipState(NOT_FRIENDS);
                                             requestButton.setText("Add");
                                         }
                                     });
                         }
                         else{
-                            Toast.makeText(AllUsersActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
 
-    public void acceptFriendRequest(String userID, Button itemButton, UserFriendshipState friendshipState){
+    public void acceptFriendRequest(String userID, Button itemButton, AllUsersActivity.UserFriendshipState friendshipState){
         final String user = userID;
         final Button requestButton = itemButton;
-        final UserFriendshipState friendship_state = friendshipState;
+        final AllUsersActivity.UserFriendshipState friendship_state = friendshipState;
         final String current_date = DateFormat.getDateInstance().format(new Date());
 
         friendListRef.child(LoginActivity.current_user.getUid())
-                .child(user)
-                .child("Date").setValue(current_date)
+                .child(user).setValue(current_date)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
 
-                if(task.isSuccessful()){
+                        if(task.isSuccessful()){
 
-                    friendListRef.child(user)
-                            .child(LoginActivity.current_user.getUid())
-                            .child("Date").setValue(current_date)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-
-                            friendRequestListRef.child(LoginActivity.current_user.getUid())
-                                    .child(user).removeValue()
+                            friendListRef.child(user)
+                                    .child(LoginActivity.current_user.getUid()).setValue(current_date)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-
-                                    friendRequestListRef.child(user)
-                                            .child(LoginActivity.current_user.getUid()).removeValue()
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
 
-                                            friendship_state.setFriendshipState(FRIENDS);
-                                            requestButton.setText("Unfriend");
-                                            Toast.makeText(AllUsersActivity.this, "Request accepted!", Toast.LENGTH_SHORT).show();
+                                            friendRequestListRef.child(LoginActivity.current_user.getUid())
+                                                    .child(user).removeValue()
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+
+                                                            friendRequestListRef.child(user)
+                                                                    .child(LoginActivity.current_user.getUid()).removeValue()
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void aVoid) {
+
+                                                                            friendship_state.setFriendshipState(FRIENDS);
+                                                                            requestButton.setText("Unfriend");
+                                                                            Toast.makeText(context, "Request accepted!", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    });
+                                                        }
+                                                    });
                                         }
                                     });
-                                }
-                            });
                         }
-                    });
-                }
-                else{
-                    Toast.makeText(AllUsersActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+                        else{
+                            Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
 
-    public void unfriend(String userID, Button itemButton, UserFriendshipState friendshipState){
+    public void unfriend(String userID, Button itemButton, AllUsersActivity.UserFriendshipState friendshipState){
         final String user = userID;
         final Button requestButton = itemButton;
-        final UserFriendshipState friendship_state = friendshipState;
+        final AllUsersActivity.UserFriendshipState friendship_state = friendshipState;
 
         friendListRef.child(LoginActivity.current_user.getUid())
                 .child(user).removeValue()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
 
-                    friendListRef.child(user)
-                            .child(LoginActivity.current_user.getUid()).removeValue()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
+                            friendListRef.child(user)
+                                    .child(LoginActivity.current_user.getUid()).removeValue()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
 
-                            friendship_state.setFriendshipState(NOT_FRIENDS);
-                            requestButton.setText("Add");
-                            Toast.makeText(AllUsersActivity.this,"Succsessfully unfriended!", Toast.LENGTH_SHORT).show();
+                                            friendship_state.setFriendshipState(NOT_FRIENDS);
+                                            requestButton.setText("Add");
+                                            Toast.makeText(context,"Succsessfully unfriended!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                         }
-                    });
-                }
-                else{
-                    Toast.makeText(AllUsersActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+                        else{
+                            Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
 
@@ -294,18 +316,15 @@ public class AllUsersActivity extends AppCompatActivity {
     public static class UserRecyclerViewItem extends RecyclerView.ViewHolder{
 
         public TextView username;
-        public TextView userEmail;
         public ImageView profilePicture;
         public Button friendRequest;
-        public Button sendMessage;
 
         public UserRecyclerViewItem(View itemView) {
             super(itemView);
             username = (TextView)itemView.findViewById(R.id.usernameTV);
-            userEmail = (TextView) itemView.findViewById(R.id.allUsersEmailTV);
             profilePicture = (ImageView) itemView.findViewById(R.id.recyclerItemProfilePicture);
             friendRequest = (Button) itemView.findViewById(R.id.sendRequestButton);
-            sendMessage = (Button) itemView.findViewById(R.id.sendMessageButton);
+
         }
     }
 
@@ -324,6 +343,4 @@ public class AllUsersActivity extends AppCompatActivity {
             this.friendshipState = state;
         }
     }
-
 }
-

@@ -53,11 +53,11 @@ public class GameScreen implements Screen {
         for(String s: app.translatedPairs.values()){
             enemyValues.add(s);
         }
-        enemyManager = new EnemyManager(enemyValues);
+        enemyManager = new EnemyManager(enemyValues, app.translatedPairs);
 
         gameStage.addActor(ship);
 
-        collisionManager = new CollisionManager(ship.getShotManager(),enemyManager, ship, app.translatedPairs);
+        collisionManager = new CollisionManager(ship.getShotManager(),enemyManager, ship, app.translatedPairs, app);
 
         List<String> wordValues = new ArrayList<String>();
         for(String s: app.translatedPairs.keySet()){

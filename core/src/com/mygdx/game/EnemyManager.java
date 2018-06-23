@@ -6,8 +6,11 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -16,20 +19,24 @@ import java.util.Random;
 
 public class EnemyManager{
     public Texture enemyTexture;
-    public Texture collectableEnemyTexture;
+    public Texture collectibleEnemyTexture;
+    public Map<String,String> translatedPairs = new HashMap<String, String>();
     public List<String> enemyvalues = new ArrayList<String>();
+    public List<Integer> enemyvaluesFrequency;
     public ArrayList<EnemyActor> enemyPool;
     public  Random random;
     public float spawnTimeOut = 1f;
     public static String DEFAULT_KR_CHARACTERS;
     public GlyphLayout glyphLayout;
+    private int collectibleDisplayCounter = 0;
 
-    public EnemyManager(List<String> enemyvalues){
+    public EnemyManager(List<String> enemyvalues, Map<String,String> translatedPairs){
 
         this.glyphLayout = new GlyphLayout();
 
         this.enemyvalues = enemyvalues;
-      //  Gdx.app.error("MyTag", enemyvalues.size()+" " + enemyvalues.get(3));
+        this.translatedPairs = translatedPairs;
+        enemyvaluesFrequency =  new ArrayList<Integer>(Collections.nCopies(enemyvalues.size(), 0));
 
         StringBuilder str = new StringBuilder();
         for(int i = 0; i < enemyvalues.size(); i++ ){
@@ -38,19 +45,20 @@ public class EnemyManager{
         DEFAULT_KR_CHARACTERS = str.toString();
 
         enemyTexture = new Texture(Gdx.files.internal("asteroid_adjusted.png"));
-        collectableEnemyTexture = new Texture(Gdx.files.internal("star_blue.png"));
+        collectibleEnemyTexture = new Texture(Gdx.files.internal("star_blue.png"));
 
         this.enemyPool = new ArrayList<EnemyActor>();
         for(int i=0; i<3; i++){
             this.enemyPool.add(new EnemyActor(enemyTexture,4,2));
         }
         for(int i=0; i<5; i++){
-            EnemyActor collectable = new EnemyActor(collectableEnemyTexture,1,1);
-            collectable.isCollectible = true;
-            this.enemyPool.add(collectable);
+            EnemyActor collectible = new EnemyActor(collectibleEnemyTexture,1,1);
+            collectible.isCollectible = true;
+            this.enemyPool.add(collectible);
         }
 
         random = new Random();
+
     }
 
 
@@ -86,7 +94,8 @@ public class EnemyManager{
                     temp = enemyPool.get(i);
                     found = true;
                     if(temp.isCollectible){
-                        wordValuePosition = random.nextInt(enemyvalues.size());
+                       // wordValuePosition = random.nextInt(enemyvalues.size()); //get random word to show
+                        wordValuePosition = collectiblePositionToDisplay();
                         glyphLayout.setText(temp.labelFont,enemyvalues.get(wordValuePosition));
                         temp.wordWidth = glyphLayout.width;
 
@@ -104,4 +113,48 @@ public class EnemyManager{
             spawnTimeOut -= Gdx.graphics.getDeltaTime();
         }
     }
+
+    public void actualizePreviousHUDWordFrequency(){
+        for(int i=0; i<enemyvaluesFrequency.size();i++){
+            if(enemyvaluesFrequency.get(i) == Integer.MAX_VALUE){
+                if(!enemyvalues.get(i).equals(this.translatedPairs.get(HUD.word))){
+                    enemyvaluesFrequency.set(i,1);
+                    return;
+                }
+            }
+        }
+    }
+
+    public int collectiblePositionToDisplay(){
+        int position;
+        int translatedHUDWordPosition = enemyvalues.indexOf(this.translatedPairs.get(HUD.word));//get the position of HUD word inside eneyvalues
+        enemyvaluesFrequency.set(translatedHUDWordPosition, Integer.MAX_VALUE);
+        actualizePreviousHUDWordFrequency();
+       /* if(Collections.frequency(enemyvaluesFrequency,Integer.MAX_VALUE) > 1){
+            enemyvaluesFrequency = new ArrayList<Integer>(Collections.nCopies(enemyvalues.size(), 0));
+            enemyvaluesFrequency.set(translatedHUDWordPosition, Integer.MAX_VALUE);
+        }*/
+
+        if(collectibleDisplayCounter > random.nextInt(4)){
+            position = enemyvaluesFrequency.indexOf(Integer.MAX_VALUE);
+            collectibleDisplayCounter = 0;
+        }
+        else{
+            if(collectibleDisplayCounter%2 == 0) {
+                position = enemyvaluesFrequency.indexOf(Collections.min(enemyvaluesFrequency));
+            }
+            else{
+                position = enemyvaluesFrequency.lastIndexOf(Collections.min(enemyvaluesFrequency));
+            }
+             enemyvaluesFrequency.set(position,enemyvaluesFrequency.get(position) + 1);
+        }
+        collectibleDisplayCounter++;
+
+        for(int i =0; i< enemyvaluesFrequency.size();i++){
+            Gdx.app.error("EnemyValues: " , enemyvalues.get(i) + " " + enemyvaluesFrequency.get(i));
+        }
+        return  position;
+    }
+
+
 }

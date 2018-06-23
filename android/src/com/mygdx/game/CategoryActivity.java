@@ -109,8 +109,10 @@ public class CategoryActivity extends AppCompatActivity {
         allUsers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CategoryActivity.this, AllUsersActivity.class);
-                startActivity(intent);
+                //Intent intent = new Intent(CategoryActivity.this, AllUsersActivity.class);
+               // startActivity(intent);
+                 Intent intent = new Intent(CategoryActivity.this, ExploreTabActivity.class);
+                 startActivity(intent);
             }
         });
 

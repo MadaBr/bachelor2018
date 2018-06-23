@@ -45,7 +45,12 @@
             android:theme="@style/SplashScreenTheme" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".AllUsersActivity"></activity>
+        <activity android:name=".AllUsersActivity" />
+        <activity
+            android:name=".ExploreTabActivity"
+            android:label="@string/title_activity_explore_tab"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".UserChatActivity"></activity>
     </application>
 
 </manifest>
