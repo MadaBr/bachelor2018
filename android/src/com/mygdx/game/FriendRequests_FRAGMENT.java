@@ -1,12 +1,13 @@
 package com.mygdx.game;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,26 +65,29 @@ public class FriendRequests_FRAGMENT extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         friendsReqRV.setLayoutManager(layoutManager);
 
-        FirebaseRecyclerAdapter<String,AllUsersActivity.UserRecyclerViewItem> adapter = new FirebaseRecyclerAdapter<String, AllUsersActivity.UserRecyclerViewItem>(String.class, R.layout.all_users_recycler_item, AllUsersActivity.UserRecyclerViewItem.class, friendRequestListRef.child(LoginActivity.current_user.getUid())) {
+        FirebaseRecyclerAdapter<FriendRequest,AllUsersActivity.UserRecyclerViewItem> adapter = new FirebaseRecyclerAdapter<FriendRequest, AllUsersActivity.UserRecyclerViewItem>(FriendRequest.class, R.layout.all_users_recycler_item, AllUsersActivity.UserRecyclerViewItem.class, friendRequestListRef.child(LoginActivity.current_user.getUid())) {
             @Override
-            protected void populateViewHolder(final AllUsersActivity.UserRecyclerViewItem holder, String model, final int position) {
+            protected void populateViewHolder(final AllUsersActivity.UserRecyclerViewItem holder, FriendRequest model, final int position) {
                 final String user_UID = getRef(position).getKey();
                 final User current_friendReq = new User();
                 final AllUsersActivity.UserFriendshipState friendship_state = new AllUsersActivity.UserFriendshipState(NOT_FRIENDS);
 
+                Log.wtf("REQUESTS", LoginActivity.current_user.getUid() + " > CURRENTLY LOGGED IN ");
+                Log.wtf("REQUESTS" , "REQUEST: " + user_UID + " - " + model.getRequest_state() );
                 //--to set current request button state
-                friendRequestListRef.child(LoginActivity.current_user.getUid())
+               /* friendRequestListRef.child(LoginActivity.current_user.getUid())
                         .child(user_UID)
                         .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.child("request_state").getValue().toString().equals("received")){
-                            friendship_state.setFriendshipState(REQ_RECV);
-                            holder.friendRequest.setText("Accept Request");
-                        }
-                        else if (dataSnapshot.child("request_state").getValue().toString().equals("sent")){
-                            friendship_state.setFriendshipState(REQ_SENT);
-                            holder.friendRequest.setText("Cancel Request");
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            if (ds.child("request_state").getValue().toString().equals("received")) {
+                                friendship_state.setFriendshipState(REQ_RECV);
+                                holder.friendRequest.setText("Accept Request");
+                            } else if (ds.child("request_state").getValue().toString().equals("sent")) {
+                                friendship_state.setFriendshipState(REQ_SENT);
+                                holder.friendRequest.setText("Cancel Request");
+                            }
                         }
                     }
 
@@ -92,14 +96,25 @@ public class FriendRequests_FRAGMENT extends Fragment {
 
                     }
                 });
+                */
+                if (model.getRequest_state().equals("received")) {
+                    friendship_state.setFriendshipState(REQ_RECV);
+                    holder.friendRequest.setText("Accept Request");
+                    Log.wtf("REQUEST", " received from " + user_UID);
+                } else if (model.getRequest_state().equals("sent")) {
+                    friendship_state.setFriendshipState(REQ_SENT);
+                    holder.friendRequest.setText("Cancel Request");
+                    Log.wtf("REQUEST", " sent to " + user_UID);
+                }
 
                 //---------to show current friendReq user info
 
                 ref.child("Users").child(user_UID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        holder.username.setText(dataSnapshot.child("username").getValue().toString());
-                        holder.userEmail.setText(dataSnapshot.child("email").getValue().toString());
+                        Log.wtf("REQUESTS", "user " + user_UID + "data ");
+                            holder.username.setText(dataSnapshot.child("username").getValue().toString());
+                            holder.userEmail.setText(dataSnapshot.child("email").getValue().toString());
                     }
 
                     @Override

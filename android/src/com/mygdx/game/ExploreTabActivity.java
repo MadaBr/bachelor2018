@@ -36,6 +36,7 @@ public class ExploreTabActivity extends AppCompatActivity {
         TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
         tabs.addTab(tabs.newTab().setText("All users"));
         tabs.addTab(tabs.newTab().setText("Friends"));
+        tabs.addTab(tabs.newTab().setText("Requests"));
         tabs.setTabGravity(TabLayout.GRAVITY_FILL);
 
         sectionsAdapter = new SectionsPageAdapter(getSupportFragmentManager(), tabs.getTabCount());

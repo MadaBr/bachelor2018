@@ -38,16 +38,18 @@ public class Application extends Game{
 	public SpriteBatch batch;
 	private Screen menuScreen;
 	public  Map<String,String> translatedPairs;
-	public static String nativeLanguage, studyingLanguage;
+	public static String nativeLanguage, studyingLanguage, category;
+	public static boolean isDifficult = false;
 
 	public static String NATIVE_LANGUAGE_CHARS, STUDYING_LANGUAGE_CHARS;
 
 
-	public Application(AndroidActivityResolver androidResolver,Map<String, String> translatedPairs, String nativeLanguage, String studyingLanguage) {
+	public Application(AndroidActivityResolver androidResolver,Map<String, String> translatedPairs, String nativeLanguage, String studyingLanguage, String category) {
 		this.androidResolver = androidResolver;
 	    this.translatedPairs = translatedPairs;
 	    this.nativeLanguage = nativeLanguage;
 	    this.studyingLanguage = studyingLanguage;
+	    this.category = category;
 
 	    StringBuilder b1 = new StringBuilder();
 		StringBuilder b2 = new StringBuilder();

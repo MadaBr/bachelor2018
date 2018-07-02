@@ -2,6 +2,8 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,8 @@ public class  CollisionManager {
     private ShipActor ship;
     private Map<String,String> translatedPairs = new HashMap<String, String>();
     private Random random = new Random();
+    public static SequenceAction flicker = new SequenceAction(Actions.fadeOut(0.25f), Actions.fadeIn(0.25f));
+    public static float flickerTimeout = 2.0f;
 
     public CollisionManager(ShotManager shotManager, EnemyManager enemyManager, ShipActor ship, Map<String,String> translatedPairs, Application app){
         this.app = app;
@@ -44,14 +48,13 @@ public class  CollisionManager {
             if((temp.isActive) && (!temp.isCollectible)) {
                 if (shotManager.shotHitTarget(temp.getBoundingBox())){
                     temp.hitCount++;
-                   // temp.gotHit();
                 }
             }
         }
     }
 
     public void handleEnemyGotCollected(){
-        for(int i=0; i<enemyManager.enemyPool.size();i++) { //pt ca tiai pus tu de la 3 incolo collectibles in enemypool
+        for(int i=0; i<enemyManager.enemyPool.size();i++) {
             EnemyActor temp = enemyManager.enemyPool.get(i);
             if((temp.isActive) && (temp.isCollectible)) {
                 if (ship.enemyCollision(temp.getBoundingBox())){
@@ -59,10 +62,6 @@ public class  CollisionManager {
                     Rectangle r2 = temp.getBoundingBox();
 
                     if(temp.stringValue.getText().toString().equals(translatedPairs.get(HUD.word))){
-                        Gdx.app.error("MY TAG","ship: " +r1.getX()+" "+ r1.getY() +" - " + r1.getWidth() + " " + r1.getHeight() + " > " +
-                                "enemy: " +r2.getX()+" "+ r2.getY() +" - " + r2.getWidth() + " " + r2.getHeight() );
-                        //HUD.score += HUD.word.length() * 10;
-                       // HUD.word = HUD.wordValues.get(random.nextInt(HUD.wordValues.size())); -moved these 2^ to hud class
                         HUD.actualizeHUDScore();;
                         HUD.actualizeHUDWord();
                         temp.gotHit();
@@ -76,10 +75,12 @@ public class  CollisionManager {
 
         for(int i=0; i<enemyManager.enemyPool.size(); i++){
             EnemyActor temp = enemyManager.enemyPool.get(i);
-            if((temp.isActive) && (!temp.isCollectible)){     //TO DO: if collectable has wrong string
+            if((temp.isActive) && (!temp.isCollectible)){
                 if (ship.enemyCollision(temp.getBoundingBox())) {
                     if (temp.generateDamageTimeout < 0) {
                         ship.lives--;
+                        ship.addAction(Actions.repeat(2, flicker));
+                        this.flickerTimeout = 2.0f;
                         temp.generateDamageTimeout = 2f;
                     }
                     else{

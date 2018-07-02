@@ -17,9 +17,10 @@ public class AndroidLauncher extends AndroidApplication {
 		Intent data = getIntent();
 		String nativeLanguage = data.getStringExtra("nativeLanguage");
 		String studyingLanguage = data.getStringExtra("studyingLanguage");
+		String category = data.getStringExtra("category");
 
 		AndroidActivityResolver androidResolver = new AndroidResolver(this);
 		Log.wtf("DEBUGGING", "4. launcher starting game");
-		initialize(new Application(androidResolver,CategoryActivity.translatedPairs, nativeLanguage,studyingLanguage), config);
+		initialize(new Application(androidResolver,CategoryActivity.translatedPairs, nativeLanguage,studyingLanguage, category), config);
 	}
 }

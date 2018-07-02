@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -20,7 +21,7 @@ public class ShipActor extends Actor{
     public final int frameWidth,frameHeight;
     private TextureRegion currentFrame;
     private TextureRegion[] textureFrames;
-    private Animation<TextureRegion> animation;
+    public Animation<TextureRegion> animation;
     private Vector2 velocity;
     public Vector2 position;
     private float stateTime=0f;
@@ -29,6 +30,7 @@ public class ShipActor extends Actor{
     public boolean moving;
     private ShotManager shotManager;
     public int lives ;
+    public static int SPEED;
 
     public ShipActor(Sprite sprite, int frames_column, int frames_row){
         Texture shipTexture = sprite.getTexture();
@@ -53,27 +55,38 @@ public class ShipActor extends Actor{
         lives = 5;
 
         shotManager= new ShotManager(new Texture(Gdx.files.internal("laserShot.png")));
+
+        this.SPEED = 700;
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         stateTime+= Gdx.graphics.getDeltaTime();
         currentFrame = animation.getKeyFrame(stateTime,true);
+        Color color = getColor();
+        batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
         batch.draw(currentFrame,position.x,position.y);
         shotManager.draw((SpriteBatch) batch);
     }
 
     @Override
     public void act(float delta) {
+        super.act(delta);
         maintainBoundaries();
         update(delta);
+        if(CollisionManager.flickerTimeout > 0) {
+            CollisionManager.flickerTimeout -= delta;
+        }
+        else{
+            this.removeAction(CollisionManager.flicker);
+        }
     }
 
     public void update(float delta){
         if(this.moving == true)
         {
-            position.x += GameScreen.directionX * 700 * delta;
-            position.y += GameScreen.directionY * 700* delta;
+            position.x += GameScreen.directionX * SPEED * delta; //700 nstead of speed
+            position.y += GameScreen.directionY * SPEED * delta;
             if((Math.sqrt(Math.pow(position.x-initialPosition.x,2)+Math.pow(position.y-initialPosition.y,2))) >= GameScreen.distance)
             {
                 position.x = GameScreen.end.x;

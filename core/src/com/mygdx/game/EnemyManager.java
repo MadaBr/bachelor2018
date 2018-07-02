@@ -150,9 +150,6 @@ public class EnemyManager{
         }
         collectibleDisplayCounter++;
 
-        for(int i =0; i< enemyvaluesFrequency.size();i++){
-            Gdx.app.error("EnemyValues: " , enemyvalues.get(i) + " " + enemyvaluesFrequency.get(i));
-        }
         return  position;
     }
 

@@ -258,65 +258,6 @@ public class ChatBotActivity extends AppCompatActivity {
     }
 
 
-    /*  public class MessageChatBot extends AsyncTask<String,Void,String>{
-        @Override
-        protected void onPostExecute(String s) {
-            if(s!=null){
-                botMessage.setText(s);
-            }
-            else{
-                botMessage.setText("null");
-            }
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            StringBuilder builder = null;
-            Log.wtf("tag", "async");
-            try {
-                URL url = new URL("https://tw2017-braha-madalina-madakattlyne.c9users.io:8081/chat");
-                HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
-                Log.wtf("tag", "got conn");
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setRequestProperty("charset", "utf-8");
-                conn.setDoOutput(true);
-                DataOutputStream ds = new DataOutputStream(conn.getOutputStream());
-                String d = "{ \"text\": \"따뜻하다 " + strings[0] + "\"}";
-                byte[] data = d.getBytes("UTF-8");
-                ds.write(data);
-                ds.flush();
-                ds.close();
-
-                InputStream is = conn.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader bfr = new BufferedReader(isr);
-                String line="";
-                builder = new StringBuilder();
-                while((line=bfr.readLine())!=null){
-                    builder.append(line);
-                }
-                bfr.close();
-                isr.close();
-                is.close();
-                conn.disconnect();
-
-            } catch(MalformedURLException e){
-                e.printStackTrace();
-            }
-            catch(IOException e){
-                e.printStackTrace();
-            }
-
-            return builder.toString();
-        }
-    }*/
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

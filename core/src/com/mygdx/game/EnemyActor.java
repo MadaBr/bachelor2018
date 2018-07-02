@@ -29,7 +29,7 @@ public class EnemyActor extends Actor{
     private float stateTime;
 
     public Vector2 position;
-    public Vector2 velocity;
+    public static Vector2 velocity;
 
     private float spawnTimeOut = 0f;
     public int frameWidth,frameHeight;
@@ -93,6 +93,8 @@ public class EnemyActor extends Actor{
         stringValue.setPosition(position.x + (frameWidth)/2 -20, position.y + (frameHeight)/2 + 5);
 
         velocity = new Vector2(0,-150);
+
+
         isActive = false;
         gotHit = false;
         hitCount = 0;
@@ -152,12 +154,11 @@ public class EnemyActor extends Actor{
 
     public Rectangle getBoundingBox() {
         if (!this.isCollectible) {
-            return new Rectangle(position.x + 20, position.y + 10, position.x + frameWidth - 20, position.y + frameHeight -10);
+            return new Rectangle(position.x + 20, position.y + 10, position.x + frameWidth - 270, position.y + frameHeight -100);
         }
         else{
             return new Rectangle(position.x + frameWidth/2 - 10, position.y +frameHeight/2 - 20, 20,20);
         }
     }
-
 
 }

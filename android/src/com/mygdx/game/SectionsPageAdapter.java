@@ -33,6 +33,10 @@ public class SectionsPageAdapter extends FragmentStatePagerAdapter {
                Friends_FRAGMENT tab2 = new Friends_FRAGMENT();
                 return tab2;
             }
+            case 2: {
+                FriendRequests_FRAGMENT tab3 = new FriendRequests_FRAGMENT();
+                return tab3;
+            }
 
             default: {return null;}
         }

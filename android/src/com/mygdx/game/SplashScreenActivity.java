@@ -115,16 +115,13 @@ public class SplashScreenActivity extends AppCompatActivity {
             Intent intent = new Intent("startSpaceGame");
             intent.putExtra("nativeLanguage", LoginActivity.nativeLanguage);
             intent.putExtra("studyingLanguage", LoginActivity.studyingLanguage);
+            intent.putExtra("category", gameCategory);
 
             Log.wtf("DEBUGGING", "3. splash starting game");
 
             SplashScreenActivity.this.startActivity(intent);
             SplashScreenActivity.this.finish();
 
-            //decomment to use translation
-           // Intent intent = new Intent(SplashScreenActivity.this, CategoryActivity.class);
-           // startActivity(intent);
-           // finish();
         }
 
         @Override
@@ -135,7 +132,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         @Override
         protected Map<String, String> doInBackground(Void... params) {
-            Log.wtf("DEBUGGING - in bg SPLASH", " in background for " + gameCategory);
 
             Map<String, String> translations = new HashMap<>();
             URL apiCallUrl = null;

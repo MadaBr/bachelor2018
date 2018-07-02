@@ -54,7 +54,7 @@ public class MenuScreen implements Screen{
 
         playButton = new TextButton("Play",skin,"default");
         quitButton = new TextButton("Quit",skin,"default");
-        chosedCategory = new TextField("Animals",skin,"default-transparent");
+        chosedCategory = new TextField(app.category,skin,"default-transparent");
         chosedCategory.setAlignment(Align.center);
 
 
@@ -127,7 +127,18 @@ public class MenuScreen implements Screen{
         playButton.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                app.setScreen(gameScreen);
+                if(beginner.isChecked()){
+                    Application.isDifficult = false;
+                    EnemyActor.velocity.y = -150;
+                    ShipActor.SPEED = 700;
+                }
+                else if(advanced.isChecked()){
+                    Application.isDifficult = true;
+                    EnemyActor.velocity.y = -350;
+                    ShipActor.SPEED = 900;
+                }
+                Gdx.app.error("DIFIFUCLTY", Application.isDifficult+"");
+               app.setScreen(gameScreen);
                 return true;
             }
         });
