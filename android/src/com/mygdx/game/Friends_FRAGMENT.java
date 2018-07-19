@@ -74,6 +74,8 @@ public class Friends_FRAGMENT extends Fragment{
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         holder.username.setText(dataSnapshot.child("username").getValue().toString());
                         holder.userEmail.setText(dataSnapshot.child("email").getValue().toString());
+                        holder.nativeLanguage.setText("Native\n" + dataSnapshot.child("nativeLanguage").getValue().toString());
+                        holder.studyingLanguage.setText("Studying\n" + dataSnapshot.child("studyingLanguage").getValue().toString());
                         holder.sendMessage.setEnabled(true);
                         holder.sendMessage.setVisibility(View.VISIBLE);
                     }
@@ -84,11 +86,8 @@ public class Friends_FRAGMENT extends Fragment{
                     }
                 });
 
-
-                //iei butonu pt item curent inarcat si setezi textul lui
-                //daca pui doar holder.request.settsxt va seta textu pt ultimu buton referentiat
                 final Button item_button = holder.friendRequest;
-                item_button.setText("Friends");
+                item_button.setText("Unfriend");
 
                 final AllUsersActivity.UserFriendshipState friendship_state = new AllUsersActivity.UserFriendshipState(FRIENDS);
 
@@ -106,10 +105,12 @@ public class Friends_FRAGMENT extends Fragment{
                                 cancelFriendRequest(user_UID, item_button, friendship_state);
                             }
 
+                            // --------------------------- ACCEPT REQUEST --------------------------
                             if (friendship_state.getFriendshipState() == REQ_RECV) {
                                 acceptFriendRequest(user_UID,item_button, friendship_state);
                             }
 
+                            // --------------------------- UNFRIEND --------------------------
                             if(friendship_state.getFriendshipState() == FRIENDS){
                                 unfriend(user_UID, item_button, friendship_state);
                             }

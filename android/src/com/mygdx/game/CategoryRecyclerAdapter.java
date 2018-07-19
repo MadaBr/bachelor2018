@@ -70,6 +70,7 @@ public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryRecycl
                 public void onClick(View v) {
                     if(CategoryChooserActivity.sender.equals("study")){
                         Intent intent = new Intent(v.getContext(),TeachingActivity.class);
+                        intent.putExtra("category", categoryName.getText().toString().toLowerCase());
                         v.getContext().startActivity(intent);
                     }
                     else if (CategoryChooserActivity.sender.equals("game")){

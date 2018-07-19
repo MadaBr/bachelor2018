@@ -14,16 +14,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="30dp"/>
-    
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Practice"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/bot_chat_textview"
-        android:layout_marginBottom="20dp"
-        android:layout_marginRight="20dp"/>
 
 </RelativeLayout>

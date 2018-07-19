@@ -295,6 +295,7 @@ public class AllUsersActivity extends AppCompatActivity {
 
         public TextView username;
         public TextView userEmail;
+        public TextView nativeLanguage, studyingLanguage;
         public ImageView profilePicture;
         public Button friendRequest;
         public Button sendMessage;
@@ -303,6 +304,8 @@ public class AllUsersActivity extends AppCompatActivity {
             super(itemView);
             username = (TextView)itemView.findViewById(R.id.usernameTV);
             userEmail = (TextView) itemView.findViewById(R.id.allUsersEmailTV);
+            nativeLanguage = (TextView) itemView.findViewById(R.id.allUsersNativeTV) ;
+            studyingLanguage = (TextView) itemView.findViewById(R.id.allUsersStudyingTV) ;
             profilePicture = (ImageView) itemView.findViewById(R.id.recyclerItemProfilePicture);
             friendRequest = (Button) itemView.findViewById(R.id.sendRequestButton);
             sendMessage = (Button) itemView.findViewById(R.id.sendMessageButton);

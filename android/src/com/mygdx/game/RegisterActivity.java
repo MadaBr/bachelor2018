@@ -48,13 +48,26 @@ public class RegisterActivity extends AppCompatActivity {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                emailData = email.getText().toString();
-                passwordData = password.getText().toString();
-                usernameData = username.getText().toString();
-                nativeLanguage = nativeLanguages.getSelectedItem().toString();
-                studyingLanguage = studyingLanguages.getSelectedItem().toString();
-                Log.wtf("Register", nativeLanguage + " " +studyingLanguage );
-                registerUser(emailData, passwordData);
+
+                if(email.getText().toString().equals("")) {
+                    email.setError("This field cannot be empty");
+                }
+                else if (password.getText().toString().equals("")) {
+                    password.setError("This field cannot be empty");
+                }
+                else if (username.getText().toString().equals("")) {
+                    username.setError("This field cannot be empty");
+                }
+                else {
+                    emailData = email.getText().toString();
+                    passwordData = password.getText().toString();
+                    usernameData = username.getText().toString();
+                    nativeLanguage = nativeLanguages.getSelectedItem().toString();
+                    studyingLanguage = studyingLanguages.getSelectedItem().toString();
+                    registerUser(emailData, passwordData);
+                }
+
+
             }
         });
     }

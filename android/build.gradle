@@ -144,6 +144,7 @@ idea {
     compile 'ai.api:sdk:2.0.7@aar'
     compile 'ai.api:libai:1.6.12'
     implementation 'com.squareup.picasso:picasso:2.71828'
+        compile 'com.nex3z:notification-badge:0.1.0'
 
 }
 

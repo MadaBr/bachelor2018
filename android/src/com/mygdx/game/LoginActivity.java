@@ -1,6 +1,8 @@
 package com.mygdx.game;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -48,33 +50,43 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
                                      @Override
                                      public void onClick(View v) {
+                                         if (email.getText().toString().equals("")) {
+                                             email.setError("E-mail filed must be completed accordingly");
+                                         }
+                                         else if (password.getText().toString().equals("")){
+                                             password.setError("Password filed cannot be empty");
+                                         }
+                                         else {
+                                             mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                                                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                                         @Override
+                                                         public void onComplete(@NonNull Task<AuthResult> task) {
+                                                             if (task.isSuccessful()) {
+                                                                 LoginActivity.current_user = mAuth.getCurrentUser();
 
-                                         mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                                                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                                     @Override
-                                                     public void onComplete(@NonNull Task<AuthResult> task) {
-                                                         if (task.isSuccessful()) {
-                                                             LoginActivity.current_user = mAuth.getCurrentUser();
+                                                                 String deviceTokenID = FirebaseInstanceId.getInstance().getToken();
+                                                                 Log.wtf("token", deviceTokenID);
+                                                                 user_ref.child(LoginActivity.current_user.getUid())
+                                                                         .child("tokenID").setValue(deviceTokenID);
 
-                                                             String deviceTokenID = FirebaseInstanceId.getInstance().getToken();
-                                                             Log.wtf("token", deviceTokenID);
-                                                             user_ref.child(LoginActivity.current_user.getUid())
-                                                                     .child("tokenID").setValue(deviceTokenID);
+                                                                 retrieveLanguageConfig(current_user.getUid());
 
-                                                             retrieveLanguageConfig(current_user.getUid());
+                                                                // SharedPreferences preferences = getApplicationContext().getSharedPreferences("login",0);
+                                                                 //SharedPreferences.Editor editor = preferences.edit();
+                                                                 //editor.putString("email",email.getText().toString());
+                                                                 //editor.putString("password", password.getText().toString());
+                                                                 //editor.commit();
 
-                                                             Intent intent = new Intent(LoginActivity.this, CategoryActivity.class);
-                                                             startActivity(intent);
-                                                             finish();
+                                                                 Intent intent = new Intent(LoginActivity.this, CategoryActivity.class);
+                                                                 startActivity(intent);
+                                                                 finish();
 
-
+                                                             } else {
+                                                                 Toast.makeText(LoginActivity.this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                                             }
                                                          }
-                                                         else
-                                                         {
-                                                             Toast.makeText(LoginActivity.this,"Login failed: " + task.getException().getMessage(),Toast.LENGTH_LONG).show();
-                                                         }
-                                                     }
-                                                 });
+                                                     });
+                                         }
                                      }
                                  });
 

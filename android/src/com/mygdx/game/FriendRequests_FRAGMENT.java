@@ -70,51 +70,21 @@ public class FriendRequests_FRAGMENT extends Fragment {
             protected void populateViewHolder(final AllUsersActivity.UserRecyclerViewItem holder, FriendRequest model, final int position) {
                 final String user_UID = getRef(position).getKey();
                 final User current_friendReq = new User();
-                final AllUsersActivity.UserFriendshipState friendship_state = new AllUsersActivity.UserFriendshipState(NOT_FRIENDS);
 
-                Log.wtf("REQUESTS", LoginActivity.current_user.getUid() + " > CURRENTLY LOGGED IN ");
-                Log.wtf("REQUESTS" , "REQUEST: " + user_UID + " - " + model.getRequest_state() );
-                //--to set current request button state
-               /* friendRequestListRef.child(LoginActivity.current_user.getUid())
-                        .child(user_UID)
-                        .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            if (ds.child("request_state").getValue().toString().equals("received")) {
-                                friendship_state.setFriendshipState(REQ_RECV);
-                                holder.friendRequest.setText("Accept Request");
-                            } else if (ds.child("request_state").getValue().toString().equals("sent")) {
-                                friendship_state.setFriendshipState(REQ_SENT);
-                                holder.friendRequest.setText("Cancel Request");
-                            }
-                        }
-                    }
+                final AllUsersActivity.UserFriendshipState friendship_state = new AllUsersActivity.UserFriendshipState(0);
+                final Button item_button = holder.friendRequest;
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-                */
-                if (model.getRequest_state().equals("received")) {
-                    friendship_state.setFriendshipState(REQ_RECV);
-                    holder.friendRequest.setText("Accept Request");
-                    Log.wtf("REQUEST", " received from " + user_UID);
-                } else if (model.getRequest_state().equals("sent")) {
-                    friendship_state.setFriendshipState(REQ_SENT);
-                    holder.friendRequest.setText("Cancel Request");
-                    Log.wtf("REQUEST", " sent to " + user_UID);
-                }
+                checkFriendshipStatus(user_UID, item_button, friendship_state);
 
                 //---------to show current friendReq user info
-
                 ref.child("Users").child(user_UID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.wtf("REQUESTS", "user " + user_UID + "data ");
                             holder.username.setText(dataSnapshot.child("username").getValue().toString());
                             holder.userEmail.setText(dataSnapshot.child("email").getValue().toString());
+                            holder.nativeLanguage.setText("Native\n"+dataSnapshot.child("nativeLanguage").getValue().toString());
+                            holder.studyingLanguage.setText("Studying\n"+dataSnapshot.child("studyingLanguage").getValue().toString());
                     }
 
                     @Override
@@ -122,11 +92,6 @@ public class FriendRequests_FRAGMENT extends Fragment {
 
                     }
                 });
-
-
-                final Button item_button = holder.friendRequest;
-                item_button.setText("Friends");
-
 
                 holder.friendRequest.setOnClickListener(new View.OnClickListener() {
 
@@ -142,10 +107,12 @@ public class FriendRequests_FRAGMENT extends Fragment {
                             cancelFriendRequest(user_UID, item_button, friendship_state);
                         }
 
+                        // --------------------------- ACCEPT REQUEST --------------------------
                         if (friendship_state.getFriendshipState() == REQ_RECV) {
                             acceptFriendRequest(user_UID,item_button, friendship_state);
                         }
 
+                        // --------------------------- UNFRIEND --------------------------
                         if(friendship_state.getFriendshipState() == FRIENDS){
                             unfriend(user_UID, item_button, friendship_state);
                         }
@@ -161,6 +128,50 @@ public class FriendRequests_FRAGMENT extends Fragment {
         return  view;
     }
 
+    public void checkFriendshipStatus(String userID, Button itemButton, AllUsersActivity.UserFriendshipState friendshipState){
+        final String user = userID;
+        final Button requestButton = itemButton;
+        final AllUsersActivity.UserFriendshipState friendship_state = friendshipState;
+
+        friendRequestListRef.child(LoginActivity.current_user.getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if(dataSnapshot.hasChild(user)){
+
+                            if(dataSnapshot.child(user).child("request_state").getValue().toString().equals("sent")){
+                                friendship_state.setFriendshipState(REQ_SENT);
+                                requestButton.setText("Cancel request");
+                            }
+                            if (dataSnapshot.child(user).child("request_state").getValue().toString().equals("received")){
+                                friendship_state.setFriendshipState(REQ_RECV);
+                                requestButton.setText("Accept request");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+        friendListRef.child(LoginActivity.current_user.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(user)){
+                    friendship_state.setFriendshipState(FRIENDS);
+                    requestButton.setText("Unfriend");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
     public void sendFriendRequest(String userID, Button itemButton, AllUsersActivity.UserFriendshipState friendshipState){
         final String user = userID;
         final Button requestButton = itemButton;
@@ -230,7 +241,6 @@ public class FriendRequests_FRAGMENT extends Fragment {
                 });
     }
 
-
     public void acceptFriendRequest(String userID, Button itemButton, AllUsersActivity.UserFriendshipState friendshipState){
         final String user = userID;
         final Button requestButton = itemButton;
@@ -238,8 +248,7 @@ public class FriendRequests_FRAGMENT extends Fragment {
         final String current_date = DateFormat.getDateInstance().format(new Date());
 
         friendListRef.child(LoginActivity.current_user.getUid())
-                .child(user)
-                .child("Date").setValue(current_date)
+                .child(user).setValue(current_date)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -247,8 +256,7 @@ public class FriendRequests_FRAGMENT extends Fragment {
                         if(task.isSuccessful()){
 
                             friendListRef.child(user)
-                                    .child(LoginActivity.current_user.getUid())
-                                    .child("Date").setValue(current_date)
+                                    .child(LoginActivity.current_user.getUid()).setValue(current_date)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -281,7 +289,6 @@ public class FriendRequests_FRAGMENT extends Fragment {
                     }
                 });
     }
-
 
     public void unfriend(String userID, Button itemButton, AllUsersActivity.UserFriendshipState friendshipState){
         final String user = userID;

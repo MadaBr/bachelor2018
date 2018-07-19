@@ -77,7 +77,9 @@
         android:text="@string/signUp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/studingLanguageSpinner" />
+        app:layout_constraintTop_toTopOf="@+id/studingLanguageSpinner"
+        android:background="@drawable/transparent_button"
+        android:textColor="@color/mistyRose"/>
 
     <TextView
         android:id="@+id/nativeLanguageTV"

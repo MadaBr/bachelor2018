@@ -28,7 +28,7 @@
         android:textSize="15dp"
         android:textColor="@color/mistyRose" />
     <View
-        android:background="@color/bot_chatBubble"
+        android:background="@color/raspberryLight"
         android:layout_width="match_parent"
         android:layout_height="10dp" />
     </LinearLayout>

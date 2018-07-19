@@ -27,6 +27,11 @@ public class CategoryChooserActivity extends AppCompatActivity {
         icons.add(R.drawable.people_104);
         icons.add(R.drawable.animals_104);
         icons.add(R.drawable.actions_104);
+        icons.add(R.drawable.numbers_104);
+        icons.add(R.drawable.food_104);
+        icons.add(R.drawable.clothes_104);
+        icons.add(R.drawable.weather_104);
+        icons.add(R.drawable.feelings_96);
 
         categoryRecyclerV = (RecyclerView) findViewById(R.id.categoryRV);
         categoryRecyclerV.hasFixedSize();

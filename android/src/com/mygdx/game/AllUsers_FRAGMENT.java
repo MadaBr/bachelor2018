@@ -70,6 +70,8 @@ public class AllUsers_FRAGMENT extends Fragment {
                 final String user_UID = getRef(position).getKey();
                 holder.username.setText(model.getUsername());
                 holder.userEmail.setText(model.getEmail());
+                holder.nativeLanguage.setText("Native\n" + model.getNativeLanguage());
+                holder.studyingLanguage.setText("Studying\n" + model.getStudyingLanguage());
 
                 if (!user_UID.equals(LoginActivity.current_user.getUid())) {
                     final Button item_button = holder.friendRequest;

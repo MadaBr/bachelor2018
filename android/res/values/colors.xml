@@ -11,4 +11,7 @@
     <color name="botTextColor">#EBF7F7</color>
     <color name="nickel">#797170</color>
     <color name="mistyRose">#FCE4E0</color>
+    <color name="raspberry">#dd3f5b</color>
+    <color name="cherry">#920d23</color>
+    <color name="raspberryLight">#db7880</color>
 </resources>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.mygdx.game.LoginActivity"
-    android:background="@color/colorDark">
+    android:background="@color/raspberry">
 
     <EditText
         android:id="@+id/loginEmailET"
@@ -54,7 +54,9 @@
         android:text="@string/LoginText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginPasswordET" />
+        app:layout_constraintTop_toBottomOf="@+id/loginPasswordET"
+        android:background="@drawable/transparent_button"
+        android:textColor="@color/mistyRose"/>
 
     <TextView
         android:id="@+id/textView"
@@ -80,5 +82,7 @@
         android:text="@string/new_account"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginButton" />
+        app:layout_constraintTop_toBottomOf="@+id/loginButton"
+        android:background="@drawable/transparent_button"
+        android:textColor="@color/mistyRose"/>
 </android.support.constraint.ConstraintLayout>
